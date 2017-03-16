@@ -3,12 +3,13 @@
  * @Author: pengleon
  * @Date:   2017-03-14 13:26:42
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-14 16:12:19
+ * @Last Modified time: 2017-03-16 16:51:17
  */
 
 namespace goconfd\phpsdk;
 
-use goconfd\phpsdk\kv\Local;
+use goconfd\phpsdk\kv\Php;
+use goconfd\phpsdk\kv\Json;
 use goconfd\phpsdk\kv\Agent;
 
 class Goconfd 
@@ -48,11 +49,23 @@ class Goconfd
 		if (!isset($this->_config['agent_url'])) {
 			$this->_config['agent_url'] = "http://127.0.0.1:3001/";
 		}
+		if (empty($this->_config['save_type'])) {
+			$this->_config['save_type'] = 1;
+		}
+		if (empty($this->_config['file_ext'])) {
+			$this->_config['file_ext'] = 'php';
+		}
 	}
 
 	public function initKvs()
 	{
-		$this->_local = new Local($this->_config['save_path']);
+		if ($this->_config['save_type'] == 1) {
+			if ($this->_config['file_ext'] == 'php') {
+				$this->_local = new Php($this->_config['save_path']);
+			}else{
+				$this->_local = new Json($this->_config['save_path']);
+			}
+		}
 		$this->_agent = new Agent($this->_config['agent_url']);
 	}
 }
