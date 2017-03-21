@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-14 13:26:42
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-16 16:51:17
+ * @Last Modified time: 2017-03-20 16:06:40
  */
 
 namespace goconfd\phpsdk;
@@ -11,6 +11,7 @@ namespace goconfd\phpsdk;
 use goconfd\phpsdk\kv\Php;
 use goconfd\phpsdk\kv\Json;
 use goconfd\phpsdk\kv\Agent;
+use goconfd\phpsdk\kv\Shm;
 
 class Goconfd 
 {
@@ -25,20 +26,30 @@ class Goconfd
 		$this->initKvs();
 	}
 
+	public function getFromAgent($key)
+	{
+		$key = $this->chkKeyPrefix($key);
+		$kv = $this->_agent->get($key);
+		return $kv;
+	}
+
 	public function get($key)
+	{
+		$key = $this->chkKeyPrefix($key);
+		$kv = $this->_local->get($key);
+		return $kv;
+	}
+
+	private function chkKeyPrefix($key)
 	{
 		$pos = strpos($key, $this->_config['key_prefix']);
 		if ($pos === false) {
 			$key = $this->_config['key_prefix'].$key;
 		}
-		$kv = $this->_local->get($key);
-		if (is_null($kv)) {
-			$kv = $this->_agent->get($key);
-		}
-		return $kv;
+		return $key;
 	}
 
-	public function chkConfig()
+	private function chkConfig()
 	{
 		if (empty($this->_config['save_path'])) {
 			throw new Exception("save path require");
@@ -57,7 +68,7 @@ class Goconfd
 		}
 	}
 
-	public function initKvs()
+	private function initKvs()
 	{
 		if ($this->_config['save_type'] == 1) {
 			if ($this->_config['file_ext'] == 'php') {
@@ -65,6 +76,8 @@ class Goconfd
 			}else{
 				$this->_local = new Json($this->_config['save_path']);
 			}
+		}else{
+			$this->_local = new Shm($this->_config['save_path']);
 		}
 		$this->_agent = new Agent($this->_config['agent_url']);
 	}
