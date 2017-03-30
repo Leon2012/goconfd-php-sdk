@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-14 15:03:01
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-30 14:37:57
+ * @Last Modified time: 2017-03-30 17:11:35
  */
 
 include_once("../vendor/autoload.php");
@@ -28,8 +28,8 @@ $config = [
 
 $key = "develop.activity.k1";
 $sdk = new Goconfd($config);
-$ke = $sdk->getFromQueue('/tmp/queue1', 'a.b.c.d');
-//$kv = $sdk->get("develop.activity.k1");
+$sdk->sendQueue('/tmp/queue1', 'develop.activity.k10');
+$kv = $sdk->get("develop.activity.k10");
 if ($kv) {
 	echo $kv->getValue();
 }

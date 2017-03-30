@@ -3,7 +3,7 @@
  * @Author: PengYe
  * @Date:   2017-03-30 14:21:24
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-30 14:41:59
+ * @Last Modified time: 2017-03-30 17:15:22
  */
 
 namespace goconfd\phpsdk\kv;
@@ -12,7 +12,7 @@ use goconfd\phpsdk\KvInterface;
 use goconfd\phpsdk\Kv;
 use goconfd\phpsdk\Util;
 
-class MsgQueue implements KvInterface
+class MsgQueue
 {
 	private $_queuePath;
 
@@ -24,31 +24,23 @@ class MsgQueue implements KvInterface
 		$this->_queuePath = $queuePath;
 	}
 
-	public function get($key)
+	public function send($key)
 	{
-		$hexKey = Util::str2hex($key);
+		//$hexKey = Util::str2hex($key);
 		$shmKey = Util::ftok($this->_queuePath, 0x01);
+		//$shmKey = 0xDEADBEEF;
 		if ($shmKey == -1) {
-			return null;
+			return false;
 		}
 		if(!msg_queue_exists($shmKey)){
-			return null;
+			return false;
 		}
 		if(($msqid = msg_get_queue($shmKey)) === FALSE) {
-			return null;
+			return false;
 		}
-		if(!msg_send($msqid, 12, $hexKey."\0", false)) {
-			return null;
+		if(!msg_send($msqid, 12, $key, false)) {
+			return false;
 		}
-
-		if (!msg_receive($msqid,0,$msgtype,1024,$data,true)) {
-			return null;
-		} 
-		$arr = json_decode($data, true);
-		if (!$arr) {
-			return null;
-		}
-		$kv = new Kv($arr);
-		return $kv;
+		return true;
 	}
 }

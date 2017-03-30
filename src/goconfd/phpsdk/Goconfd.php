@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-14 13:26:42
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-30 14:39:14
+ * @Last Modified time: 2017-03-30 17:11:23
  */
 
 namespace goconfd\phpsdk;
@@ -35,13 +35,18 @@ class Goconfd
 		return $kv;
 	}
 
-	public function getFromQueue($queuePath, $key)
+	public function sendQueue($queuePath, $key)
 	{
 		if (!$this->_queue) {
 			$this->_queue = new MsgQueue($queuePath);
 		}
-		$kv = $this->_queue->get($key);
-		return $kv;
+		$isOK = $this->_queue->send($key);
+		usleep(500);
+		if ($isOK) {
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public function get($key)

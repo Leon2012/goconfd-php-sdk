@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-14 13:30:52
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-30 14:41:12
+ * @Last Modified time: 2017-03-30 17:00:36
  */
 
 namespace goconfd\phpsdk\kv;
@@ -23,11 +23,11 @@ class Agent implements KvInterface
 
 	public function get($key)
 	{
-		$hexKey = Util::str2hex($key);
+		//$hexKey = Util::str2hex($key);
 		if (substr($this->_url, -1) == "/") {
-			$url = $this->_url."get/".$hexKey;
+			$url = $this->_url."get/".$key;
 		}else{
-			$url = $this->_url."/get/".$hexKey;
+			$url = $this->_url."/get/".$key;
 		}
 		$client = new \GuzzleHttp\Client();
 		$res = $client->get($url);
