@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-20 15:55:29
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-20 17:07:10
+ * @Last Modified time: 2017-03-30 14:41:50
  */
 
 namespace goconfd\phpsdk\kv;
@@ -11,6 +11,7 @@ namespace goconfd\phpsdk\kv;
 use goconfd\phpsdk\KvInterface;
 use goconfd\phpsdk\Kv;
 use goconfd\phpsdk\Exception;
+use goconfd\phpsdk\Util;
 
 class Shm extends Base implements KvInterface
 {
@@ -25,9 +26,9 @@ class Shm extends Base implements KvInterface
 
 	public function get($key)
 	{
-		$hexKey = $this->str2hex($key);
+		$hexKey = Util::str2hex($key);
 		$shmFile = $this->_path."/".$hexKey;
-		$shmKey = $this->ftok($shmFile, 0x01);
+		$shmKey = Util::ftok($shmFile, 0x01);
 		if ($shmKey == -1) {
 			return null;
 		}
@@ -48,16 +49,6 @@ class Shm extends Base implements KvInterface
 		shmop_close($shmId);
 		$kv = new Kv($arr);
 		return $kv;
-	}
-
-	private function ftok($pathname, $proj_id) 
-	{ 
-   		$st = @stat($pathname); 
-   		if (!$st) { 
-       		return -1; 
-   		} 
-   		$key = sprintf("%u", (($st['ino'] & 0xffff) | (($st['dev'] & 0xff) << 16) | (($proj_id & 0xff) << 24)));
-   		return $key; 
 	}
 
 }

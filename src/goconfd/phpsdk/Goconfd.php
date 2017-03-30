@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-14 13:26:42
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-20 16:06:40
+ * @Last Modified time: 2017-03-30 14:39:14
  */
 
 namespace goconfd\phpsdk;
@@ -12,12 +12,14 @@ use goconfd\phpsdk\kv\Php;
 use goconfd\phpsdk\kv\Json;
 use goconfd\phpsdk\kv\Agent;
 use goconfd\phpsdk\kv\Shm;
+use goconfd\phpsdk\kv\MsgQueue;
 
 class Goconfd 
 {
 	private $_config;
 	private $_local;
 	private $_agent;
+	private $_queue;
 
 	public function __construct($config)
 	{
@@ -30,6 +32,15 @@ class Goconfd
 	{
 		$key = $this->chkKeyPrefix($key);
 		$kv = $this->_agent->get($key);
+		return $kv;
+	}
+
+	public function getFromQueue($queuePath, $key)
+	{
+		if (!$this->_queue) {
+			$this->_queue = new MsgQueue($queuePath);
+		}
+		$kv = $this->_queue->get($key);
 		return $kv;
 	}
 

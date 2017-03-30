@@ -3,7 +3,7 @@
  * @Author: pengleon
  * @Date:   2017-03-14 15:03:01
  * @Last Modified by:   PengYe
- * @Last Modified time: 2017-03-20 16:54:34
+ * @Last Modified time: 2017-03-30 14:37:57
  */
 
 include_once("../vendor/autoload.php");
@@ -26,9 +26,10 @@ $config = [
 	'agent_url' => 'http://127.0.0.1:3001/',
 ];
 
-
+$key = "develop.activity.k1";
 $sdk = new Goconfd($config);
-$kv = $sdk->get("develop.activity.k1");
+$ke = $sdk->getFromQueue('/tmp/queue1', 'a.b.c.d');
+//$kv = $sdk->get("develop.activity.k1");
 if ($kv) {
 	echo $kv->getValue();
 }
